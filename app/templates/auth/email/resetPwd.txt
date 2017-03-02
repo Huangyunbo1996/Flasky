@@ -1,0 +1,5 @@
+尊敬的{{user.username}},
+    欢迎使用Flasky！
+    请点击下面的链接以重设你的账户密码（有效期60分钟）：
+    {{url_for('auth.resetPwd',token=token,_external=True)}}
+    请不要回复这封邮件。

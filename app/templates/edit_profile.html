@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Flasky - 资料修改{% endblock %}
+{% block  page_content %}
+<div class="page-header">
+    <h1>
+        资料修改
+    </h1>
+</div>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+    {% if current_user==user %}
+    <p>
+        <a href="{{url_for('auth.changePwd')}}">修改密码</a>
+    </p>
+    <p>
+        <a href="{{url_for('auth.send_reset_password_emial')}}">重设密码</a>
+    </p>
+    {% endif %}
+</div>
+{% endblock %}
