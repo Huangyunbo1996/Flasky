@@ -66,6 +66,7 @@ class User(UserMixin,db.Model):
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean,default=False)
     avatar_hash = db.Column(db.String(32))
+    posts = db.relationship('Post',backref='author',lazy='dynamic')
 
     @property
     def password(self):
@@ -126,6 +127,14 @@ class User(UserMixin,db.Model):
                 self.role = Role.query.filter_by(default=True).first()
         if self.Email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(self.Email.encode('utf-8')).hexdigest()
+
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer,primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
+    author_id = db.Column(db.Integer,db.ForeignKey('users.id'))
 
 
 class AnonymousUser(AnonymousUserMixin):

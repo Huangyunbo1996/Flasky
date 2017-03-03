@@ -37,3 +37,7 @@ class EditProfileAdminForm(Form):
         User.query.filter_by(username=field.data).first():
             raise ValidationError
         
+        
+class PostForm(Form):
+    body = TextAreaField('你在想什么？',validators=[Required()])
+    submit = SubmitField('提交')
