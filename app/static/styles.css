@@ -38,3 +38,11 @@ div.pagination {
     padding: 0px;
     margin: 0px;
 }
+ul.users{
+    list-style-type: none;
+    padding: 0px;
+    margin: 16px 0px 0px 0px;
+}
+ul.users li.user{
+    padding: 8px;
+}

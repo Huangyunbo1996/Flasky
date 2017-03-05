@@ -79,3 +79,15 @@ def edit_profile_admin(id):
     form.about_me.data = user.about_me
     form.location.data = user.location
     return render_template('edit_profile.html',form=form,user=user)
+
+#用户管理
+@main.route('/user-management')
+@admin_required
+def user_management():
+    page = request.args.get('page',1,type=int)
+    pagination = User.query.order_by(User.username).paginate(
+        page,current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False
+    )
+    users = pagination.items
+    return render_template('user_management.html',users=users,pagination=pagination)

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}Flasky - 用户管理{% endblock %}
+{% block page_content %}
+<div class="page-header">
+    <h1>
+        用户管理
+    </h1>
+</div>
+<div>
+    <ul class="users">
+        {% for u in users %}
+        <li class="user">
+        <a href="{{url_for('main.user',username=u.username)}}">
+            <img src="{{u.gravatar(size=40)}}">
+        </a>
+        <a href="{{url_for('main.user',username=u.username)}}">
+            {{u.username}}
+        </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{{macros.pagination_widget(pagination,'main.user_management')}}
+{% endblock %}
