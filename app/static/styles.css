@@ -23,12 +23,12 @@ div.post-date {
 }
 div.post-author {
     font-weight: bold;
-    margin-left: 48px;
+    margin-left: 72px;
 }
 div.post-thumbnail {
     position: absolute;
 }
 div.post-content {
-    margin-left: 48px;
+    margin-left: 72px;
     min-height: 48px;
 }

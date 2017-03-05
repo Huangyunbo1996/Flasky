@@ -30,5 +30,7 @@
             </p>
             {% endif %}
         </div>
+        <h3>{% if current_user==user %}我{% else %}{{user.username}}{% endif %}的文章</h3>
+        {% include "_posts.html" %}
 </div>
 {% endblock %}

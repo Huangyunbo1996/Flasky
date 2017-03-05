@@ -39,5 +39,5 @@ class EditProfileAdminForm(Form):
         
         
 class PostForm(Form):
-    body = TextAreaField('你在想什么？',validators=[Required()])
+    body = TextAreaField('想说点什么？',validators=[Required()])
     submit = SubmitField('提交')
