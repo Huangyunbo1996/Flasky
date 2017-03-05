@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_macros.html" as macros %}
 {% block title %}Flasky - {{user.username}}{% endblock %}
 {% block page_content %}
 <div class="page-header">
@@ -31,6 +32,9 @@
             {% endif %}
         </div>
         <h3>{% if current_user==user %}我{% else %}{{user.username}}{% endif %}的文章</h3>
-        {% include "_posts.html" %}
 </div>
+        {% include "_posts.html" %}
+        <div class="pagination">
+                {{macros.pagination_widget(pagination,'main.user',username=user.username)}}
+        </div>
 {% endblock %}
