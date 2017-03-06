@@ -16,7 +16,16 @@
             </a>
         </div>
         <div class="post-content">
+            {% if post.body_html %}
+            {{post.body_html|safe}}
+            {% else %}
             {{post.body}}
+            {% endif %}
+            <div class="post-footer">
+                <a href="{{url_for('main.post',id=post.id)}}">
+                    <span class="label label-default">链接</span>
+                </a>
+            </div>
         </div>
     </li>
     {% endfor %}

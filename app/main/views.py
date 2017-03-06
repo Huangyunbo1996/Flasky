@@ -91,3 +91,9 @@ def user_management():
     )
     users = pagination.items
     return render_template('user_management.html',users=users,pagination=pagination)
+
+#文章
+@main.route('/post/<id>')
+def post(id):
+    post = Post.query.get_or_404(id)
+    return render_template('post.html',posts=[post])
