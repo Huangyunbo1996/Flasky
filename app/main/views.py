@@ -97,3 +97,28 @@ def user_management():
 def post(id):
     post = Post.query.get_or_404(id)
     return render_template('post.html',posts=[post])
+
+#编辑文章
+@main.route('/edit/<int:id>',methods=['GET','POST'])
+@login_required
+def edit(id):
+    post = Post.query.get_or_404(id)
+    if current_user != post.author and not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.body = form.body.data
+        db.session.add(post)
+        flash('文章编辑成功。')
+        return redirect(url_for('main.post',id=post.id))
+    form.body.data = post.body
+    return render_template('edit.html',form=form)
+
+#删除文章
+@main.route('/delete-post/<int:id>')
+@admin_required
+def delete_post(id):
+    post = Post.query.get(id)
+    db.session.delete(post)
+    flash('文章删除成功。')
+    return redirect(url_for('main.index'))
