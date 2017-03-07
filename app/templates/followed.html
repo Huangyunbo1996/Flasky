@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Flasky - {{user.username}}关注的人{% endblock %}
+{% import "_macros.html" as macros %}
+{% block page_content %}
+<div class="page-header">
+    <h1>{{user.username}}关注的人</h1>
+</div>
+<div>
+    <ul class="users">
+        {% for f in follow %}
+        <li class="user">
+        <a href="{{url_for('main.user',username=f.followed.username)}}">
+            <img src="{{f.followed.gravatar(size=40)}}">
+        </a>
+        <a href="{{url_for('main.user',username=f.followed.username)}}">
+            {{f.followed.username}}
+        </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{{macros.pagination_widget(pagination,'main.followed',username=user.username)}}
+{% endblock %}

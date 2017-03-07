@@ -1,40 +1,59 @@
 {% extends "base.html" %}
-{% import "_macros.html" as macros %}
+{% import "_macros.html" as macros %} 
 {% block title %}Flasky - {{user.username}}{% endblock %}
 {% block page_content %}
 <div class="page-header">
-        <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
-        <div class="profile-header">
-            <h1>{{ user.username }}</h1>
-            {% if user.name or user.location %}
-            <p>
-                {% if user.name %}{{user.name}}{% endif %} {% if user.location %} 来自
-                <a href="https://maps.google.com/?q={{user.location}}">{{user.location}}</a> {% endif %}
-            </p>
-            {% endif %} {% if current_user.is_administrator() %}
-            <p>发送邮件给 <a href="mailto:{{user.Email}}">{{user.Email}}</a></p>
-            {% endif %} {% if user.about_me %}
-            <p>
-                {{user.about_me}}
-            </p>
-            {% endif %}
-            <p>
-                注册日期 {{moment(user.member_since).format('L')}}. 最后在线 {{moment(user.last_seen).fromNow()}}
-            </p>
-            <br> {% if user==current_user %}
-            <p>
-                <a class="btn btn-default" href="{{url_for('main.edit_profile')}}">修改个人资料</a>
-            </p>
-            {% endif %} {% if current_user.is_administrator() %}
-            <p>
-                <a class="btn btn-danger" href="{{url_for('main.edit_profile_admin',id=user.id)}}">修改资料[管理员]</a>
-            </p>
-            {% endif %}
-        </div>
-        <h3>{% if current_user==user %}我{% else %}{{user.username}}{% endif %}的文章</h3>
+    <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
+    <div class="profile-header">
+        <h1>{{ user.username }}</h1>
+        {% if user.name or user.location %}
+        <p>
+            {% if user.name %}{{user.name}}{% endif %} {% if user.location %} 来自
+            <a href="https://maps.google.com/?q={{user.location}}">{{user.location}}</a> {% endif %}
+        </p>
+        {% endif %} 
+        {% if current_user.is_administrator() %}
+        <p>发送邮件给 <a href="mailto:{{user.Email}}">{{user.Email}}</a></p>
+        {% endif %} 
+        {% if user.about_me %}
+        <p>
+            {{user.about_me}}
+        </p>
+        {% endif %}
+        <p>
+            注册日期 {{moment(user.member_since).format('L')}}. 最后在线 {{moment(user.last_seen).fromNow()}}
+        </p>
+        {% if current_user.can(Permission.FOLLOW) and user != current_user %} 
+        {% if not current_user.is_following(user) %}
+        <a href="{{url_for('main.follow',username=user.username)}}" class="btn btn-primary">关注</a> 
+        {% else %}
+        <a href="{{url_for('main.unfollow',username=user.username)}}" class="btn btn-default">取消关注</a> 
+        {% endif %}
+        {% endif %}
+        <a href="{{url_for('main.followed',username=user.username)}}">
+                他关注的人:<span class="badge">{{user.followed.count()}}</span></a>
+        <a href="{{url_for('main.followers',username=user.username)}}">
+                关注他的人:<span class="badge">{{user.followers.count()}}</span></a>
+        {% if current_user.is_authenticated and user != current_user and current_user.is_followed_by(user) %} |
+        <span class="label label-default">关注了你</span> 
+        {% endif %} 
+        <br> 
+        {% if user==current_user %}
+        <p>
+            <a class="btn btn-default" href="{{url_for('main.edit_profile')}}">修改个人资料</a>
+        </p>
+        {% endif %} 
+        
+        {% if current_user.is_administrator() %}
+        <p>
+            <a class="btn btn-danger" href="{{url_for('main.edit_profile_admin',id=user.id)}}">修改资料[管理员]</a>
+        </p>
+        {% endif %}
+    </div>
+    <h3>{% if current_user==user %}我{% else %}{{user.username}}{% endif %}的文章</h3>
 </div>
-        {% include "_posts.html" %}
-        <div class="pagination">
-                {{macros.pagination_widget(pagination,'main.user',username=user.username)}}
-        </div>
+{% include "_posts.html" %}
+<div class="pagination">
+    {{macros.pagination_widget(pagination,'main.user',username=user.username)}}
+</div>
 {% endblock %}
