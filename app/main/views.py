@@ -2,9 +2,9 @@ from datetime import datetime
 from flask import render_template,session,redirect,url_for,abort,flash,current_app,request,make_response
 from flask.ext.login import login_required,current_user
 from . import main
-from .forms import EditProfileForm,EditProfileAdminForm,PostForm
+from .forms import EditProfileForm,EditProfileAdminForm,PostForm,CommentForm
 from .. import db
-from ..models import User,Role,Permission,Post,Follow
+from ..models import User,Role,Permission,Post,Follow,Comment
 from ..decorators import admin_required,permission_required
 
 @main.route('/',methods=['GET','POST'])
@@ -114,11 +114,26 @@ def user_management():
     return render_template('user_management.html',users=users,pagination=pagination)
 
 #文章
-@main.route('/post/<id>')
+@main.route('/post/<int:id>',methods=['GET','POST'])
 def post(id):
     post = Post.query.get_or_404(id)
-    return render_template('post.html',posts=[post])
-
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          author=current_user._get_current_object(),
+                          post=post)
+        db.session.add(comment)
+        flash('评论成功。')
+        return redirect(url_for('main.post',id=post.id,page=-1))
+    page = request.args.get('page',1,type=int)
+    if page == -1:
+        page = (post.comments.count()-1)//current_app.config['FLASKY_POSTS_PER_PAGE']+1
+    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
+    return render_template('post.html',posts=[post],form=form,pagination=pagination,comments=comments)
+    
 #编辑文章
 @main.route('/edit/<int:id>',methods=['GET','POST'])
 @login_required
@@ -207,3 +222,31 @@ def followed(username):
     )
     follow = pagination.items
     return render_template('followed.html',user=user,follow=follow,pagination=pagination)
+
+#屏蔽评论
+@main.route('/disable/<int:id>')
+@permission_required(Permission.MODERATE_COMMENTS)
+def disable(id):
+    comment = Comment.query.get_or_404(id)
+    post = comment.post
+    if comment.disable:
+        flash('无法屏蔽一条已被屏蔽的评论。')
+        return redirect(url_for('main.index'))
+    comment.disable = True
+    db.session.add(comment)
+    flash('屏蔽评论成功。')
+    return redirect(url_for('main.post',id=post.id,page=request.args.get('page')))
+
+#解除屏蔽评论
+@main.route('/enable/<int:id>')
+@permission_required(Permission.MODERATE_COMMENTS)
+def enable(id):
+    comment = Comment.query.get_or_404(id)
+    post = comment.post
+    if not comment.disable:
+        flash('无法解除屏蔽一条未被屏蔽的评论。')
+        return redirect(url_for('main.index'))
+    comment.disable = False
+    db.session.add(comment)
+    flash('解除屏蔽评论成功。')
+    return redirect(url_for('main.post',id=post.id,page=request.args.get('page')))

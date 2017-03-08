@@ -1,0 +1,42 @@
+<ul class="comments">
+    {% for comment in comments %}
+    <li class="comment">
+        <div class="profile-thumbnail">
+            <a href="{{url_for('main.user',username=comment.author.username)}}">
+                <img class="img-rounded profile-thumbnail"
+                src="{{comment.author.gravatar(size=64)}}">
+            </a>
+        </div>
+        <div class="comment-date">
+            {{moment(comment.timestamp).fromNow()}}
+        </div>
+        <div class="comment-author">
+            <a href="{{url_for('main.user',username=comment.author.username)}}">
+                {{comment.author.username}}
+            </a>
+        </div>
+        <div class="comment-content">
+            {% if comment.disable %}
+            <p><i>该评论包含不当内容。</i></p>
+            {% endif %}
+            {% if current_user.can(Permission.MODERATE_COMMENTS) or not comment.disable %}
+            {% if comment.body_html %}
+            {{comment.body_html|safe}}
+            {% else %}
+            {{comment.body}}
+            {% endif %}
+            {% endif %}
+            <div class="comment-footer">
+            {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+            {% if comment.disable %}
+            <a class="btn-success btn-xs" href="{{url_for('main.enable',id=comment.id,page=page)}}">解除屏蔽</a>
+            {% else %}
+            <a class="btn-danger btn-xs" href="{{url_for('main.disable',id=comment.id,page=page)}}">屏蔽</a>
+            {% endif %}
+            {% endif %}
+            <div>
+        </div>
+        
+    </li>
+    {% endfor %}
+</ul>

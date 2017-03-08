@@ -21,7 +21,12 @@
             {% else %}
             {{post.body}}
             {% endif %}
-            <div class="post-footer">
+            
+        </div>
+        <div class="post-footer">
+                <a href="{{url_for('main.post',id=post.id)}}">
+                    <span class="label label-primary">{{post.comments.count()}} 评论</span>
+                </a>
                 {% if current_user.is_administrator() %}
                 <a href="{{url_for('main.post',id=post.id)}}">
                     <span class="label label-default">链接</span>
@@ -43,7 +48,6 @@
                     {% endif %}
                 {% endif %}
             </div>
-        </div>
     </li>
     {% endfor %}
 </ul>

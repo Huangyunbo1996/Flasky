@@ -42,3 +42,8 @@ class EditProfileAdminForm(Form):
 class PostForm(Form):
     body = PageDownField('想说点什么？',validators=[Required()])
     submit = SubmitField('提交')
+
+
+class CommentForm(Form):
+    body = StringField('发表评论',validators=[Required()])
+    submit = SubmitField('发表评论')
